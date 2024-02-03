@@ -51,7 +51,9 @@ const speciesSchema = z.object({
 
 type FormData = z.infer<typeof speciesSchema>;
 
+// Define the form and its submission handler
 export default function SpeciesDetailsDialog({ species }: { species: Species }) {
+  // Define the state for the editing mode
   const [isEditing, setisEditing] = useState(false);
 
   const defaultValues: Partial<FormData> = {
@@ -69,15 +71,18 @@ export default function SpeciesDetailsDialog({ species }: { species: Species }) 
     mode: "onChange",
   });
 
+  // Define the form submission handler
   const onSubmit = (input: FormData) => {
     console.log(input);
   };
 
+  // Define the startEditing functions
   const startEditing = (e: MouseEvent) => {
     e.preventDefault();
     setisEditing(true);
   };
 
+  // Define the handleCancel function
   const handleCancel = (e: MouseEvent) => {
     // OK: true
     // Cancel: false
