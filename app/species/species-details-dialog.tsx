@@ -11,8 +11,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
+import { createBrowserSupabaseClient } from "@/lib/client-utils";
 import { type Database } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState, type BaseSyntheticEvent, type MouseEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -53,6 +56,7 @@ type FormData = z.infer<typeof speciesSchema>;
 
 // Define the form and its submission handler
 export default function SpeciesDetailsDialog({ species }: { species: Species }) {
+  const router = useRouter();
   // Define the state for the editing mode
   const [isEditing, setisEditing] = useState(false);
 
@@ -72,8 +76,29 @@ export default function SpeciesDetailsDialog({ species }: { species: Species }) 
   });
 
   // Define the form submission handler
-  const onSubmit = (input: FormData) => {
-    console.log(input);
+  const onSubmit = async (input: FormData) => {
+    const supabase = createBrowserSupabaseClient();
+
+    const { error } = await supabase.from("species").update(input).eq("id", species.id);
+
+    if (error) {
+      return toast({
+        title: "Something went wrong.",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+
+    setisEditing(false);
+
+    form.reset(input);
+
+    router.refresh();
+
+    return toast({
+      title: "Changes saved!",
+      description: "Saved your changes to " + input.scientific_name + ".",
+    });
   };
 
   // Define the startEditing functions
