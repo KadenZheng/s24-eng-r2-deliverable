@@ -55,7 +55,7 @@ const speciesSchema = z.object({
 type FormData = z.infer<typeof speciesSchema>;
 
 // Define the form and its submission handler
-export default function SpeciesDetailsDialog({ species }: { species: Species }) {
+export default function SpeciesDetailsDialog({ species, currentUser }: { species: Species; currentUser: string }) {
   const router = useRouter();
   // Define the state for the editing mode
   const [isEditing, setisEditing] = useState(false);
@@ -250,22 +250,24 @@ export default function SpeciesDetailsDialog({ species }: { species: Species }) 
                   );
                 }}
               />
-              <div className="flex">
-                {isEditing ? (
-                  <>
-                    <Button type="submit" className="ml-1 mr-1 flex-auto">
-                      Confirm
+              {species.author === currentUser && (
+                <div className="flex">
+                  {isEditing ? (
+                    <>
+                      <Button type="submit" className="ml-1 mr-1 flex-auto">
+                        Confirm
+                      </Button>
+                      <Button onClick={handleCancel} type="button" className="ml-1 mr-1 flex-auto" variant="secondary">
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <Button onClick={startEditing} type="button" className="ml-1 mr-1 flex-auto">
+                      Edit Species
                     </Button>
-                    <Button onClick={handleCancel} type="button" className="ml-1 mr-1 flex-auto" variant="secondary">
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <Button onClick={startEditing} type="button" className="ml-1 mr-1 flex-auto">
-                    Edit Species
-                  </Button>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
           </form>
         </Form>
