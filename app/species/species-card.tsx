@@ -16,32 +16,29 @@ import SpeciesDetailsDialog from "./species-details-dialog";
 type Species = Database["public"]["Tables"]["species"]["Row"];
 
 // First, ensure you import useState for handling state
-import { createBrowserSupabaseClient } from "@/lib/client-utils"; // Adjust the import path as needed
+import { createBrowserSupabaseClient } from "@/lib/client-utils";
 import { useState } from "react";
 import React, { useEffect } from 'react';
-
-
-// Assuming your type definition for a species is accurate and complete
 
 export default function SpeciesCard({ species, currentUser }: { species: Species; currentUser: string }) {
   // Add state for hover effect
   const [isHovered, setIsHovered] = useState(false);
-  const [authorName, setAuthorName] = useState(""); // State to hold the author's display name
+  const [authorName, setAuthorName] = useState("");
 
   useEffect(() => {
     // Function to fetch the author's display name
     const fetchAuthorDisplayName = async () => {
       const supabaseClient = createBrowserSupabaseClient();
       const { data, error } = await supabaseClient
-        .from("profiles") // Assuming 'profiles' is the name of your table
+        .from("profiles")
         .select("display_name")
-        .eq("id", species.author) // Use the author ID to fetch the display name
-        .single(); // Assuming author ID is unique and returns a single record
+        .eq("id", species.author)
+        .single();
 
       if (error) {
         console.error("Error fetching author details:", error);
       } else if (data) {
-        setAuthorName(data.display_name); // Update the state with the fetched display name
+        setAuthorName(data.display_name);
       }
     };
 
@@ -59,7 +56,6 @@ export default function SpeciesCard({ species, currentUser }: { species: Species
       alert(`Error deleting species: ${error.message}`);
     } else {
       // Reload the page to reflect the deletion
-      // For a more advanced implementation, you might want to update the list in the parent component without reloading.
       window.location.reload();
     }
   };
@@ -76,7 +72,6 @@ export default function SpeciesCard({ species, currentUser }: { species: Species
             // Display confirmation dialog
             const isConfirmed = window.confirm("Are you sure you want to delete this species?");
             if (isConfirmed) {
-              // If the user confirmed, proceed with the deletion
               void deleteSpecies();
             }
             // If the user cancels, do nothing
@@ -87,7 +82,7 @@ export default function SpeciesCard({ species, currentUser }: { species: Species
             right: "18px",
             background: "red",
             color: "white",
-            borderRadius: "4px", // Rounded corners
+            borderRadius: "4px",
             width: "25px",
             height: "25px",
             display: "flex",
@@ -95,8 +90,8 @@ export default function SpeciesCard({ species, currentUser }: { species: Species
             justifyContent: "center",
             cursor: "pointer",
             border: "none",
-            boxShadow: "0 2.5px 5px rgba(0,0,0,0.4)", // Drop shadow
-            zIndex: 10, // Ensure it's above other elements
+            boxShadow: "0 2.5px 5px rgba(0,0,0,0.4)",
+            zIndex: 10,
           }}
           aria-label="Delete Species"
         >
@@ -112,7 +107,7 @@ export default function SpeciesCard({ species, currentUser }: { species: Species
       <h4 className="text-lg font-light italic">{species.common_name}</h4>
       <p>{species.description ? species.description.slice(0, 150).trim() + "..." : ""}</p>
       <SpeciesDetailsDialog species={species} currentUser={currentUser} />
-      {authorName && ( // Display the author's display name
+      {authorName && ( 
         <p className="mt-4 text-sm text-left text-gray-400">Author: {authorName}</p>
       )}
     </div>
